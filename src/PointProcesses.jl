@@ -15,6 +15,7 @@ using LinearAlgebra: dot
 using Random: rand
 using Random: AbstractRNG, default_rng
 using StatsAPI: StatsAPI, fit
+using Intervals: Interval, intersect, Bounded, Unbounded
 
 ## Hidden names
 
@@ -25,12 +26,13 @@ using StatsAPI: StatsAPI, fit
 export logdensityof, densityof # DensityInterface
 export fit # StatsAPI
 export fit_map
+export intersect
 
 ## History
 
 export History
 export event_times, event_marks, min_time, max_time, min_mark, max_mark
-export nb_events, has_events, duration
+export nb_events, has_events, duration, dimension
 export time_change, split_into_chunks
 
 ## Point processes
@@ -51,6 +53,7 @@ export MarkedPoissonProcess
 
 # Includes
 
+include("intervals.jl")
 include("history.jl")
 include("abstract_point_process.jl")
 include("simulation.jl")
