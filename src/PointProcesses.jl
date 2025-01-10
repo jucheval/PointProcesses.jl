@@ -15,7 +15,7 @@ using LinearAlgebra: dot
 using Random: rand
 using Random: AbstractRNG, default_rng
 using StatsAPI: StatsAPI, fit
-using Intervals: Interval, Bounded, Unbounded
+using Intervals: Interval, Bounded, Unbounded, Open, Closed
 using Intervals: span, superset
 
 ## Hidden names

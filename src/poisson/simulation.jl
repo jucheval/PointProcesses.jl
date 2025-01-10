@@ -5,7 +5,7 @@ function Base.rand(
     N = rand(rng, Poisson(float(ground_intensity(pp) * (tmax - tmin))))
     times = sort(rand(rng, Uniform(tmin, tmax), N))
     marks = M[rand(rng, mark_dist) for n in 1:N]
-    return History(; times=times, marks=marks, tmin=tmin, tmax=tmax)
+    return History(; times=times, marks=marks, interval = Interval{Closed,Open}(tmin, tmax))
 end
 
 function Base.rand(pp::AbstractPoissonProcess, tmin::Real, tmax::Real)

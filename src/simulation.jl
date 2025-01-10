@@ -6,7 +6,7 @@ Simulate a temporal point process `pp` on interval `[tmin, tmax)` using Ogata's 
 function simulate_ogata(
     rng::AbstractRNG, pp::AbstractPointProcess{M}, tmin::T, tmax::T
 ) where {M,T<:Real}
-    h = History(; times=T[], marks=M[], tmin=tmin, tmax=tmax)
+    h = History(; times=T[], marks=M[], interval = Interval{Closed,Open}(tmin, tmax))
     t = tmin
     while t < tmax
         B, L = ground_intensity_bound(pp, t + eps(t), h)
