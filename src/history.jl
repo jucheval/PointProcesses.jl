@@ -23,18 +23,19 @@ mutable struct History{T<:Real, N, M}
         if !mapreduce(issorted, &, times)
             @warn "Times have been sorted."
             if N==1
-                times, marks = sorttimesandmarks(times[1], marks[1])
+                times, marks = _sorttimesandmarks(times[1], marks[1])
                 times = (times,)
                 marks = (marks,)
             else
-                times, marks = map(sorttimesandmarks, times, marks)
+                times, marks = map(_sorttimesandmarks, times, marks)
             end
         end
+        # Escape if 
         # Check that the times are included in interval
-        if !mapreduce(x -> first(x) in interval, &, times)
+        if !reduce(&, broadcast(_safeleftcheck, times, interval))
             throw(ArgumentError("There is at least one time too small: times must be in the interval "*string(interval)*"."))
         end
-        if !mapreduce(x -> last(x) in interval, &, times)
+        if !reduce(&, broadcast(_saferightcheck, times, interval))
             throw(ArgumentError("There is at least one time too large: times must be in the interval "*string(interval)*"."))
         end
         return new{T, N, M}(times, marks, interval)
@@ -126,10 +127,10 @@ Return the trace of `h` on the time interval `interval`.
 """
 function Base.intersect(h::History{T,N,M},interval::Interval) where {T<:Real,N,M}
     if M == Nothing
-        times = map(intersect_times, h.times, ntuple(i -> interval, ndims(h)))
+        times = map(_intersect_times, h.times, ntuple(i -> interval, ndims(h)))
         return History(times, interval)
     else
-        timesandmarks = map(intersect_timesandmarks, h.times, h.marks, ntuple(i -> interval, ndims(h)))
+        timesandmarks = map(_intersect_timesandmarks, h.times, h.marks, ntuple(i -> interval, ndims(h)))
         return History(ntuple(i -> timesandmarks[i][1], N), ntuple(i -> timesandmarks[i][2], N), interval)
     end
 end
@@ -198,7 +199,7 @@ Add event `(t, n, m)` at the end of history `h`.
 function Base.push!(h::History, t, n, m; check=true)
     if check
         @assert t in h.interval
-        @assert (length(h) == 0) || (h.times[n] <= t)
+        @assert (length(h) == 0) || mapreduce(x -> last(x) <= t, &, h.times)
     end
     push!(h.times[n], t)
     push!(h.marks[n], m)
@@ -267,19 +268,27 @@ min_mark(h::History; init=first(event_marks(h))) = minimum(event_marks(h); init=
 
 
 # Auxiliary functions
-function intersect_timesandmarks(times::Vector{T},marks::Vector,interval::Interval) where {T<:Real} 
+function _intersect_timesandmarks(times::Vector{T},marks::Vector,interval::Interval) where {T<:Real} 
     i_min = searchsortedfirst(times, first(interval))
     i_max = searchsortedlast(times, last(interval))
     return times[i_min:i_max], marks[i_min:i_max]
 end
 
-function intersect_times(times::Vector{T},interval::Interval) where {T<:Real} 
+function _intersect_times(times::Vector{T},interval::Interval) where {T<:Real} 
     i_min = searchsortedfirst(times, first(interval))
     i_max = searchsortedlast(times, last(interval))
     return times[i_min:i_max]
 end
 
-function sorttimesandmarks(times::Vector, marks::Vector)
+function _sorttimesandmarks(times::Vector, marks::Vector)
     order = sortperm(times)
     return times[order], marks[order]
+end
+
+function _safeleftcheck(x, interval)
+    isempty(x) ? true : (first(x) in interval)
+end
+
+function _saferightcheck(x, interval)
+    isempty(x) ? true : (last(x) in interval)
 end
