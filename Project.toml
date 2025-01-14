@@ -14,8 +14,17 @@ StatsAPI = "82ae8749-77ed-4fe6-ae5f-f523153014b0"
 [compat]
 DensityInterface = "0.4"
 Distributions = "0.25"
+LinearAlgebra = "1.11"
+Random = "1.11"
+Statistics = "1.11"
 StatsAPI = "1.6"
 julia = "1.7"
+Aqua = "0.8"
+Documenter = "1.8"
+ForwardDiff = "0.10"
+JuliaFormatter = "1.0"
+Test = "1.11"
+Zygote = "0.6"
 
 [extras]
 Aqua = "4c88cf16-eb10-579e-8560-4a9242c79595"
