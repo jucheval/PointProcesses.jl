@@ -48,6 +48,7 @@ export simulate_ogata
 export AbstractPoissonProcess
 export MultivariatePoissonProcess, MultivariatePoissonProcessPrior
 export MarkedPoissonProcess
+export PointProcess
 
 # Includes
 

@@ -10,7 +10,7 @@ abstract type AbstractPointProcess{M} end
 ## Intensity functions
 
 """
-    ground_intensity(pp, h, t)
+    ground_intensity(pp, t, h)
 
 Compute the ground intensity for a temporal point process `pp` applied to history `h` at time `t`.
 
@@ -35,7 +35,9 @@ Compute the conditional intensity for a temporal point process `pp` applied to h
 
 The conditional intensity function `λ(t,m|h)` quantifies the instantaneous risk of an event with mark `m` occurring at time `t` after history `h`.
 """
-function intensity end
+function intensity(pp::AbstractPointProcess, m, t, h) 
+    return ground_intensity(pp, t, h) * densityof(mark_distribution(pp, t, h), m)
+end
 
 """
     log_intensity(pp, m, t, h)
